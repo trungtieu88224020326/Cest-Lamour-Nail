@@ -1,48 +1,11 @@
 
 import React, { useState, useMemo } from 'react';
-import { 
-  Box, 
-  Container, 
-  Grid, 
-  Paper, 
-  Typography, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow,
-  Checkbox,
-  ThemeProvider,
-  createTheme,
-  CssBaseline
-} from '@mui/material';
 import Navbar from './components/Navbar';
 import FinancialCharts from './components/FinancialCharts';
 import SummaryCard from './components/SummaryCard';
 import EditModal from './components/EditModal';
-import { INITIAL_INCOME, INITIAL_EXPENSES, PROFIT_LOSS } from './constants';
+import { INITIAL_INCOME, INITIAL_EXPENSES } from './constants';
 import { IncomeItem, ExpenseItem } from './types';
-
-const theme = createTheme({
-  palette: {
-    background: {
-      default: '#efefef',
-    },
-    primary: {
-      main: '#3b82f6',
-    },
-    secondary: {
-      main: '#dc2626',
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    button: {
-      textTransform: 'none',
-    },
-  },
-});
 
 const App: React.FC = () => {
   const [income, setIncome] = useState<IncomeItem[]>(INITIAL_INCOME);
@@ -76,152 +39,159 @@ const App: React.FC = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Navbar />
-        
-        <Container maxWidth="xl" sx={{ flex: 1, py: 4 }}>
-          {/* Top Section */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} xl={8}>
-              <FinancialCharts incomeData={income} expenseData={expenses} />
-            </Grid>
-            <Grid item xs={12} xl={4}>
-              <SummaryCard 
-                year={year}
-                month={month}
-                onYearChange={setYear}
-                onMonthChange={setMonth}
-                totalIncome={totalIncomeValue}
-                totalExpenses={totalExpensesValue}
-                totalCredit={totalCredit}
-                totalCash={totalCash}
-              />
-            </Grid>
-          </Grid>
+    <div className="min-vh-100 d-flex flex-column">
+      <Navbar />
+      
+      <main className="container-xl flex-grow-1 py-4">
+        {/* Dashboard Header / Global Filters & Charts */}
+        <div className="row g-4 mb-4">
+          <div className="col-12 col-lg-8">
+            <FinancialCharts incomeData={income} expenseData={expenses} />
+          </div>
+          <div className="col-12 col-lg-4">
+            <SummaryCard 
+              year={year}
+              month={month}
+              onYearChange={setYear}
+              onMonthChange={setMonth}
+              totalIncome={totalIncomeValue}
+              totalExpenses={totalExpensesValue}
+              totalCredit={totalCredit}
+              totalCash={totalCash}
+            />
+          </div>
+        </div>
 
-          {/* Bottom Section - Tables */}
-          <Grid container spacing={3}>
-            
-            {/* Income Table */}
-            <Grid item xs={12} lg={4}>
-              <TableContainer component={Paper} sx={{ height: 600, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ backgroundColor: '#3f3f46', p: 1, textAlign: 'center' }}>
-                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 300 }}>InCome</Typography>
-                </Box>
-                <Table stickyHeader size="small">
-                  <TableHead>
-                    <TableRow sx={{ '& th': { backgroundColor: '#f4f4f5', fontWeight: 700, fontSize: '0.7rem' } }}>
-                      <TableCell>Item</TableCell>
-                      <TableCell align="right">Credit</TableCell>
-                      <TableCell align="right">Cash</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
+        {/* Data Management Section - 3 Responsive Columns */}
+        <div className="row g-4">
+          
+          {/* 1. Income Column */}
+          <div className="col-12 col-md-6 col-lg-4">
+            <div className="card h-100 d-flex flex-column overflow-hidden">
+              <div className="card-header bg-white py-3 border-bottom text-center">
+                <h6 className="mb-0 fw-bold text-uppercase small tracking-wide">Monthly Income</h6>
+              </div>
+              <div className="table-sticky-wrapper flex-grow-1">
+                <table className="table table-hover table-sm mb-0 align-middle">
+                  <thead>
+                    <tr>
+                      <th className="px-3">Item</th>
+                      <th className="text-end px-3">Credit</th>
+                      <th className="text-end px-3">Cash</th>
+                      <th className="text-end px-3">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {income.map((item) => (
-                      <TableRow 
+                      <tr 
                         key={item.id} 
-                        hover 
+                        className="cursor-pointer"
                         onDoubleClick={() => handleEditItem('income', item)}
-                        sx={{ cursor: 'pointer', '& td': { fontSize: '0.75rem' } }}
                       >
-                        <TableCell>{item.item}</TableCell>
-                        <TableCell align="right">{item.credit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                        <TableCell align="right">{item.cash.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                        <TableCell align="right">{item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                      </TableRow>
+                        <td className="px-3 small fw-medium text-dark">{item.item}</td>
+                        <td className="text-end px-3 small text-primary">{item.credit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="text-end px-3 small text-success">{item.cash.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="text-end px-3 small fw-bold text-dark">{item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                      </tr>
                     ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
-            {/* Expenses Table */}
-            <Grid item xs={12} lg={4}>
-              <TableContainer component={Paper} sx={{ height: 600, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ backgroundColor: '#3f3f46', p: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2 }}>
-                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 300 }}>Expenses - Cest Lamour Nail 1</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Checkbox size="small" sx={{ color: 'white', '&.Mui-checked': { color: 'white' }, p: 0 }} />
-                    <Typography variant="caption" sx={{ color: 'white', fontSize: '0.6rem' }}>All</Typography>
-                  </Box>
-                </Box>
-                <Table stickyHeader size="small">
-                  <TableHead>
-                    <TableRow sx={{ '& th': { backgroundColor: '#f4f4f5', fontWeight: 700, fontSize: '0.7rem' } }}>
-                      <TableCell>Item</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
+          {/* 2. Expenses Column */}
+          <div className="col-12 col-md-6 col-lg-4">
+            <div className="card h-100 d-flex flex-column overflow-hidden">
+              <div className="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h6 className="mb-0 fw-bold text-uppercase small tracking-wide">Monthly Expenses</h6>
+                <div className="form-check mb-0">
+                  <input className="form-check-input" type="checkbox" id="selectAllExpenses" />
+                  <label className="form-check-label small text-muted ms-1" htmlFor="selectAllExpenses">
+                    Select All
+                  </label>
+                </div>
+              </div>
+              <div className="table-sticky-wrapper flex-grow-1">
+                <table className="table table-hover table-sm mb-0 align-middle">
+                  <thead>
+                    <tr>
+                      <th className="px-3">Category</th>
+                      <th className="text-end px-3">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {expenses.map((item) => (
-                      <TableRow 
+                      <tr 
                         key={item.id} 
-                        hover 
+                        className="cursor-pointer"
                         onDoubleClick={() => handleEditItem('expense', item)}
-                        sx={{ cursor: 'pointer', '& td': { fontSize: '0.75rem' } }}
                       >
-                        <TableCell sx={{ borderRight: '1px solid #e5e7eb' }}>{item.item}</TableCell>
-                        <TableCell align="right">{item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                      </TableRow>
+                        <td className="px-3 small text-secondary">{item.item}</td>
+                        <td className="text-end px-3 small fw-bold text-danger">
+                          {item.amount > 0 ? `$ ${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '-'}
+                        </td>
+                      </tr>
                     ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
-            {/* Profit & Loss Table */}
-            <Grid item xs={12} lg={4}>
-              <TableContainer component={Paper} sx={{ display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ backgroundColor: '#3f3f46', p: 1, textAlign: 'center' }}>
-                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 300 }}>Profit & Loss</Typography>
-                </Box>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow sx={{ '& th': { backgroundColor: '#f4f4f5', fontWeight: 700, fontSize: '0.7rem' } }}>
-                      <TableCell>Month</TableCell>
-                      <TableCell align="right">Income</TableCell>
-                      <TableCell align="right">Expenses</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {PROFIT_LOSS.map((item, idx) => (
-                      <TableRow key={idx} sx={{ '& td': { fontSize: '0.75rem' } }}>
-                        <TableCell>{item.month}</TableCell>
-                        <TableCell align="right">{totalIncomeValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                        <TableCell align="right">{totalExpensesValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 700 }}>{(totalIncomeValue - totalExpensesValue).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
+          {/* 3. Profit & Loss Column */}
+          <div className="col-12 col-md-12 col-lg-4">
+            <div className="card border-0 mb-4 shadow-sm overflow-hidden rounded-3">
+              <div className="card-header bg-white py-3 border-bottom text-center">
+                <h6 className="mb-0 fw-bold text-uppercase small tracking-wide">Financial Overview</h6>
+              </div>
+              <div className="table-responsive">
+                <table className="table table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th className="px-3">Month</th>
+                      <th className="text-end px-3">Income</th>
+                      <th className="text-end px-3">Expenses</th>
+                      <th className="text-end px-3">Net</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ backgroundColor: 'rgba(37, 99, 235, 0.03)' }}>
+                      <td className="px-3 py-3 fw-bold text-dark">{month}</td>
+                      <td className="text-end px-3 py-3 text-success fw-bold">{totalIncomeValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                      <td className="text-end px-3 py-3 text-danger fw-bold">{totalExpensesValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                      <td className={`text-end px-3 py-3 fw-bolder fs-6 ${(totalIncomeValue - totalExpensesValue) >= 0 ? 'text-success' : 'text-danger'}`}>
+                        {(totalIncomeValue - totalExpensesValue).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div className="card bg-white p-4 border rounded-3">
+              <div className="d-flex align-items-center mb-3">
+                <i className="fas fa-mouse-pointer text-primary me-3"></i>
+                <span className="small text-muted">Double-click any row to edit financial data</span>
+              </div>
+              <div className="d-flex align-items-center">
+                <i className="fas fa-bolt text-warning me-3"></i>
+                <span className="small text-muted">Changes reflect instantly in charts and summaries</span>
+              </div>
+            </div>
+          </div>
 
-          </Grid>
-        </Container>
+        </div>
+      </main>
 
-        <EditModal 
-          isOpen={editType !== null}
-          type={editType || 'income'}
-          item={selectedItem}
-          onClose={() => setEditType(null)}
-          onSave={handleSave}
-        />
-
-        {/* Footer info */}
-        <Box sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 40, display: { xs: 'none', md: 'block' } }}>
-          <Paper sx={{ p: 1.5, opacity: 0.9, backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
-            <Typography variant="caption" display="block" color="textSecondary">• Double click rows to edit values</Typography>
-            <Typography variant="caption" display="block" color="textSecondary">• Real-time updates</Typography>
-            <Typography variant="caption" display="block" color="textSecondary">• Material UI Responsive Design</Typography>
-          </Paper>
-        </Box>
-      </Box>
-    </ThemeProvider>
+      <EditModal 
+        isOpen={editType !== null}
+        type={editType || 'income'}
+        item={selectedItem}
+        onClose={() => setEditType(null)}
+        onSave={handleSave}
+      />
+    </div>
   );
 };
 
