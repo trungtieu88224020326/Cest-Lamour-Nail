@@ -23,65 +23,73 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, type, item, onClose, onSa
   };
 
   return (
-    <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-      <div className="modal-dialog modal-dialog-centered modal-sm" style={{ maxWidth: '400px' }}>
-        <div className="modal-content border-0 shadow-lg rounded-4">
-          <div className="modal-header border-bottom-0 p-4 pb-0 d-flex justify-content-between align-items-center">
-            <h5 className="modal-title fw-bold text-dark">Update {type === 'income' ? 'Entry' : 'Expense'}</h5>
-            <span className="badge bg-primary-subtle text-primary py-2 px-3 fw-bold rounded-2">
-              {item?.item || 'Item'}
-            </span>
+    <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)' }}>
+      <div className="modal-dialog modal-dialog-centered modal-sm" style={{ maxWidth: '440px' }}>
+        <div className="modal-content border-0 shadow-2xl rounded-5 overflow-hidden">
+          <div className="modal-header border-bottom-0 p-5 pb-0 d-flex flex-column align-items-start">
+            <div className="text-muted extra-small fw-bold text-uppercase mb-2 tracking-widest">Editor</div>
+            <h3 className="modal-title fw-800 text-dark">Update Record</h3>
+            <p className="text-muted small mt-1">Modify the financial details for <strong>{item?.item}</strong></p>
           </div>
           
-          <div className="modal-body p-4 d-flex flex-column gap-4">
+          <div className="modal-body p-5 pt-4 d-flex flex-column gap-4">
             {type === 'income' ? (
               <>
                 <div className="form-group">
-                  <label className="form-label small fw-bold text-secondary text-uppercase mb-2">Credit Card Portion</label>
-                  <input 
-                    className="form-control form-control-lg bg-light border-0 fw-semibold" 
-                    type="number" 
-                    value={formData.credit || 0}
-                    onChange={(e) => setFormData({ ...formData, credit: parseFloat(e.target.value) || 0 })}
-                  />
+                  <label className="form-label extra-small fw-800 text-muted text-uppercase tracking-wider mb-2">Credit Card (USD)</label>
+                  <div className="input-group">
+                    <span className="input-group-text bg-light border-0 text-muted">$</span>
+                    <input 
+                      className="form-control form-control-lg bg-light border-0 fw-bold px-3 py-3" 
+                      type="number" 
+                      value={formData.credit || 0}
+                      onChange={(e) => setFormData({ ...formData, credit: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
                 </div>
                 <div className="form-group">
-                  <label className="form-label small fw-bold text-secondary text-uppercase mb-2">Cash Portion</label>
-                  <input 
-                    className="form-control form-control-lg bg-light border-0 fw-semibold" 
-                    type="number" 
-                    value={formData.cash || 0}
-                    onChange={(e) => setFormData({ ...formData, cash: parseFloat(e.target.value) || 0 })}
-                  />
+                  <label className="form-label extra-small fw-800 text-muted text-uppercase tracking-wider mb-2">Cash / Other (USD)</label>
+                  <div className="input-group">
+                    <span className="input-group-text bg-light border-0 text-muted">$</span>
+                    <input 
+                      className="form-control form-control-lg bg-light border-0 fw-bold px-3 py-3" 
+                      type="number" 
+                      value={formData.cash || 0}
+                      onChange={(e) => setFormData({ ...formData, cash: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
                 </div>
               </>
             ) : (
               <div className="form-group">
-                <label className="form-label small fw-bold text-secondary text-uppercase mb-2">New Expense Amount</label>
-                <input 
-                  className="form-control form-control-lg bg-light border-0 fw-semibold" 
-                  type="number" 
-                  value={formData.amount || 0}
-                  onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-                />
+                <label className="form-label extra-small fw-800 text-muted text-uppercase tracking-wider mb-2">Expense Amount (USD)</label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-0 text-muted">$</span>
+                  <input 
+                    className="form-control form-control-lg bg-light border-0 fw-bold px-3 py-3 text-danger" 
+                    type="number" 
+                    value={formData.amount || 0}
+                    onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
               </div>
             )}
           </div>
 
-          <div className="modal-footer border-top-0 p-4 pt-2 gap-2">
+          <div className="modal-footer border-top-0 p-5 pt-0 d-flex gap-3">
             <button 
               type="button" 
-              className="btn btn-link text-secondary fw-bold text-decoration-none px-3" 
+              className="btn btn-light px-4 py-2 fw-bold rounded-pill text-muted flex-grow-1" 
               onClick={onClose}
             >
-              Cancel
+              Discard
             </button>
             <button 
               type="button" 
-              className="btn btn-primary btn-lg px-4 py-2 fw-bold flex-grow-1 rounded-3 shadow-sm" 
+              className="btn btn-primary bg-indigo-600 border-0 px-4 py-2 fw-bold flex-grow-1 rounded-pill shadow-indigo" 
               onClick={handleSave}
             >
-              Update Record
+              Save Changes
             </button>
           </div>
         </div>

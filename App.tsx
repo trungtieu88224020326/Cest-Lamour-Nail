@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import FinancialCharts from './components/FinancialCharts';
 import SummaryCard from './components/SummaryCard';
 import EditModal from './components/EditModal';
@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [expenses, setExpenses] = useState<ExpenseItem[]>(INITIAL_EXPENSES);
   const [year, setYear] = useState<number>(2024);
   const [month, setMonth] = useState<string>('April');
+  const [activeTab, setActiveTab] = useState('Budget');
   
   const [editType, setEditType] = useState<'income' | 'expense' | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -39,150 +40,175 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-vh-100 d-flex flex-column">
-      <Navbar />
-      
-      <main className="container-xl flex-grow-1 py-4">
-        {/* Dashboard Header / Global Filters & Charts */}
-        <div className="row g-4 mb-4">
-          <div className="col-12 col-lg-8">
-            <FinancialCharts incomeData={income} expenseData={expenses} />
-          </div>
-          <div className="col-12 col-lg-4">
-            <SummaryCard 
-              year={year}
-              month={month}
-              onYearChange={setYear}
-              onMonthChange={setMonth}
-              totalIncome={totalIncomeValue}
-              totalExpenses={totalExpensesValue}
-              totalCredit={totalCredit}
-              totalCash={totalCash}
-            />
-          </div>
-        </div>
+    <div className="d-flex min-vh-100">
+      {/* Sidebar - Desktop Only for simplicity */}
+      <Sidebar />
 
-        {/* Data Management Section - 3 Responsive Columns */}
-        <div className="row g-4">
-          
-          {/* 1. Income Column */}
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="card h-100 d-flex flex-column overflow-hidden">
-              <div className="card-header bg-white py-3 border-bottom text-center">
-                <h6 className="mb-0 fw-bold text-uppercase small tracking-wide">Monthly Income</h6>
+      <div className="flex-grow-1 d-flex flex-column" style={{ overflowX: 'hidden' }}>
+        {/* Top Navbar - Fuse Header */}
+        <header className="navbar navbar-expand-lg bg-white px-4 py-2 border-bottom sticky-top">
+          <div className="container-fluid px-0">
+            <div className="d-flex align-items-center gap-3">
+              <button className="btn d-lg-none p-0 text-muted">
+                <i className="fas fa-bars fs-4"></i>
+              </button>
+              <div className="input-group d-none d-md-flex" style={{ width: '300px' }}>
+                <span className="input-group-text bg-transparent border-0 text-muted">
+                  <i className="fas fa-search"></i>
+                </span>
+                <input type="text" className="form-control border-0 bg-transparent ps-0" placeholder="Search..." />
               </div>
-              <div className="table-sticky-wrapper flex-grow-1">
-                <table className="table table-hover table-sm mb-0 align-middle">
-                  <thead>
-                    <tr>
-                      <th className="px-3">Item</th>
-                      <th className="text-end px-3">Credit</th>
-                      <th className="text-end px-3">Cash</th>
-                      <th className="text-end px-3">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {income.map((item) => (
-                      <tr 
-                        key={item.id} 
-                        className="cursor-pointer"
-                        onDoubleClick={() => handleEditItem('income', item)}
-                      >
-                        <td className="px-3 small fw-medium text-dark">{item.item}</td>
-                        <td className="text-end px-3 small text-primary">{item.credit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                        <td className="text-end px-3 small text-success">{item.cash.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                        <td className="text-end px-3 small fw-bold text-dark">{item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            </div>
+            <div className="ms-auto d-flex align-items-center gap-3">
+              <div className="d-flex align-items-center gap-2 cursor-pointer">
+                <div className="text-end d-none d-sm-block">
+                  <div className="fw-bold small lh-1">Admin User</div>
+                  <div className="text-muted extra-small">admin@nailsalon.com</div>
+                </div>
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=4F46E5&color=fff" className="rounded-circle" width="32" height="32" alt="Avatar" />
               </div>
             </div>
           </div>
+        </header>
 
-          {/* 2. Expenses Column */}
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="card h-100 d-flex flex-column overflow-hidden">
-              <div className="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                <h6 className="mb-0 fw-bold text-uppercase small tracking-wide">Monthly Expenses</h6>
-                <div className="form-check mb-0">
-                  <input className="form-check-input" type="checkbox" id="selectAllExpenses" />
-                  <label className="form-check-label small text-muted ms-1" htmlFor="selectAllExpenses">
-                    Select All
-                  </label>
+        {/* Dashboard Header - Fuse Project Style */}
+        <section className="bg-white border-bottom pt-5 px-5">
+          <div className="container-fluid px-0">
+            <div className="row align-items-center">
+              <div className="col-auto">
+                <div className="bg-indigo-600 text-white rounded-3 d-flex align-items-center justify-content-center" style={{ width: '48px', height: '48px' }}>
+                  <i className="fas fa-briefcase fs-4"></i>
                 </div>
               </div>
-              <div className="table-sticky-wrapper flex-grow-1">
-                <table className="table table-hover table-sm mb-0 align-middle">
-                  <thead>
-                    <tr>
-                      <th className="px-3">Category</th>
-                      <th className="text-end px-3">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {expenses.map((item) => (
-                      <tr 
-                        key={item.id} 
-                        className="cursor-pointer"
-                        onDoubleClick={() => handleEditItem('expense', item)}
-                      >
-                        <td className="px-3 small text-secondary">{item.item}</td>
-                        <td className="text-end px-3 small fw-bold text-danger">
-                          {item.amount > 0 ? `$ ${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '-'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="col">
+                <div className="d-flex align-items-center gap-2 text-muted small fw-medium mb-1">
+                  <span>Dashboards</span>
+                  <i className="fas fa-chevron-right extra-small"></i>
+                  <span>Project</span>
+                </div>
+                <h3 className="fw-bold mb-0">Cest Lamour Nail. Inc</h3>
+              </div>
+              <div className="col-auto mt-3 mt-lg-0">
+                <button className="btn btn-primary bg-indigo-600 px-4 fw-bold rounded-pill">
+                  <i className="fas fa-plus me-2"></i> Export Report
+                </button>
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="d-flex gap-4 mt-4 overflow-auto">
+              {['Overview', 'Budget', 'Expenses', 'Reports'].map(tab => (
+                <div 
+                  key={tab} 
+                  className={`fuse-tab ${activeTab === tab ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Main Content Area */}
+        <main className="p-4 p-lg-5 flex-grow-1">
+          <div className="container-fluid px-0">
+            {/* Summary Row */}
+            <div className="row g-4 mb-4">
+              <div className="col-12 col-xl-8">
+                <FinancialCharts incomeData={income} expenseData={expenses} />
+              </div>
+              <div className="col-12 col-xl-4">
+                <SummaryCard 
+                  year={year}
+                  month={month}
+                  onYearChange={setYear}
+                  onMonthChange={setMonth}
+                  totalIncome={totalIncomeValue}
+                  totalExpenses={totalExpensesValue}
+                  totalCredit={totalCredit}
+                  totalCash={totalCash}
+                />
+              </div>
+            </div>
+
+            {/* Data Tables Row */}
+            <div className="row g-4">
+              {/* Income Table */}
+              <div className="col-12 col-xl-6">
+                <div className="card h-100">
+                  <div className="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0 fw-bold">Detailed Income</h5>
+                    <button className="btn btn-light btn-sm rounded-circle"><i className="fas fa-ellipsis-v text-muted"></i></button>
+                  </div>
+                  <div className="table-responsive">
+                    <table className="table table-fuse mb-0 align-middle">
+                      <thead>
+                        <tr>
+                          <th>Location / Item</th>
+                          <th className="text-end">Credit</th>
+                          <th className="text-end">Cash</th>
+                          <th className="text-end">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {income.map((item) => (
+                          <tr key={item.id} className="cursor-pointer" onDoubleClick={() => handleEditItem('income', item)}>
+                            <td>
+                              <div className="d-flex align-items-center gap-3">
+                                <div className="rounded-2 bg-primary-light text-indigo-600 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px' }}>
+                                  <i className="fas fa-store-alt small"></i>
+                                </div>
+                                <span className="fw-semibold">{item.item}</span>
+                              </div>
+                            </td>
+                            <td className="text-end text-muted">${item.credit.toLocaleString()}</td>
+                            <td className="text-end text-muted">${item.cash.toLocaleString()}</td>
+                            <td className="text-end fw-bold text-dark">${item.amount.toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Expenses Table */}
+              <div className="col-12 col-xl-6">
+                <div className="card h-100">
+                  <div className="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0 fw-bold">Expense Breakdown</h5>
+                    <button className="btn btn-light btn-sm rounded-circle"><i className="fas fa-ellipsis-v text-muted"></i></button>
+                  </div>
+                  <div className="table-responsive" style={{ maxHeight: '450px', overflowY: 'auto' }}>
+                    <table className="table table-fuse mb-0 align-middle">
+                      <thead>
+                        <tr>
+                          <th>Category</th>
+                          <th className="text-end">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {expenses.map((item) => (
+                          <tr key={item.id} className="cursor-pointer" onDoubleClick={() => handleEditItem('expense', item)}>
+                            <td>
+                              <div className="d-flex align-items-center gap-3">
+                                <div className="rounded-circle bg-danger-subtle text-danger d-flex align-items-center justify-content-center" style={{ width: '8px', height: '8px' }}></div>
+                                <span className="text-secondary">{item.item}</span>
+                              </div>
+                            </td>
+                            <td className="text-end fw-bold text-danger">${item.amount.toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
-          {/* 3. Profit & Loss Column */}
-          <div className="col-12 col-md-12 col-lg-4">
-            <div className="card border-0 mb-4 shadow-sm overflow-hidden rounded-3">
-              <div className="card-header bg-white py-3 border-bottom text-center">
-                <h6 className="mb-0 fw-bold text-uppercase small tracking-wide">Financial Overview</h6>
-              </div>
-              <div className="table-responsive">
-                <table className="table table-sm mb-0">
-                  <thead>
-                    <tr>
-                      <th className="px-3">Month</th>
-                      <th className="text-end px-3">Income</th>
-                      <th className="text-end px-3">Expenses</th>
-                      <th className="text-end px-3">Net</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style={{ backgroundColor: 'rgba(37, 99, 235, 0.03)' }}>
-                      <td className="px-3 py-3 fw-bold text-dark">{month}</td>
-                      <td className="text-end px-3 py-3 text-success fw-bold">{totalIncomeValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                      <td className="text-end px-3 py-3 text-danger fw-bold">{totalExpensesValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                      <td className={`text-end px-3 py-3 fw-bolder fs-6 ${(totalIncomeValue - totalExpensesValue) >= 0 ? 'text-success' : 'text-danger'}`}>
-                        {(totalIncomeValue - totalExpensesValue).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            
-            <div className="card bg-white p-4 border rounded-3">
-              <div className="d-flex align-items-center mb-3">
-                <i className="fas fa-mouse-pointer text-primary me-3"></i>
-                <span className="small text-muted">Double-click any row to edit financial data</span>
-              </div>
-              <div className="d-flex align-items-center">
-                <i className="fas fa-bolt text-warning me-3"></i>
-                <span className="small text-muted">Changes reflect instantly in charts and summaries</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </main>
+        </main>
+      </div>
 
       <EditModal 
         isOpen={editType !== null}

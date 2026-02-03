@@ -8,8 +8,9 @@ interface FinancialChartsProps {
   expenseData: ExpenseItem[];
 }
 
-const INCOME_COLORS = ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#2563eb'];
-const EXPENSE_COLORS = ['#ef4444', '#f87171', '#fca5a5', '#fee2e2', '#dc2626'];
+// Fuse Modern Palette
+const INCOME_COLORS = ['#4F46E5', '#818CF8', '#C7D2FE', '#EEF2FF', '#3730A3'];
+const EXPENSE_COLORS = ['#F59E0B', '#FCD34D', '#FEF3C7', '#B45309', '#D97706'];
 
 const FinancialCharts: React.FC<FinancialChartsProps> = ({ incomeData, expenseData }) => {
   const expenseSummary = expenseData
@@ -17,11 +18,14 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ incomeData, expenseDa
     .map((e) => ({ name: e.item, value: e.amount }));
 
   return (
-    <div className="row g-3 h-100">
+    <div className="row g-4 h-100">
       <div className="col-12 col-md-6">
-        <div className="card h-100 p-4 d-flex flex-column rounded-3">
-          <h6 className="text-center text-secondary fw-bold text-uppercase small mb-4">Income Sources</h6>
-          <div className="flex-grow-1" style={{ minHeight: '280px' }}>
+        <div className="card h-100 p-4 border-0 shadow-sm">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h6 className="fw-bold text-muted mb-0 text-uppercase extra-small tracking-wider">Income Sources</h6>
+            <button className="btn btn-light btn-sm rounded-pill"><i className="fas fa-sync-alt extra-small"></i></button>
+          </div>
+          <div style={{ height: '280px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -30,20 +34,20 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ incomeData, expenseDa
                   nameKey="item"
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={85}
-                  paddingAngle={4}
-                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  innerRadius={65}
+                  outerRadius={95}
+                  stroke="none"
+                  paddingAngle={5}
                 >
                   {incomeData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={INCOME_COLORS[index % INCOME_COLORS.length]} stroke="#fff" strokeWidth={2} />
+                    <Cell key={`cell-${index}`} fill={INCOME_COLORS[index % INCOME_COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  itemStyle={{ color: '#1e293b', fontSize: '12px', fontWeight: 'bold' }}
+                  contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                  itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                 />
-                <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', fontWeight: '600', color: '#64748b' }} verticalAlign="bottom" />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -51,9 +55,12 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ incomeData, expenseDa
       </div>
 
       <div className="col-12 col-md-6">
-        <div className="card h-100 p-4 d-flex flex-column rounded-3">
-          <h6 className="text-center text-secondary fw-bold text-uppercase small mb-4">Expense Allocation</h6>
-          <div className="flex-grow-1" style={{ minHeight: '280px' }}>
+        <div className="card h-100 p-4 border-0 shadow-sm">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h6 className="fw-bold text-muted mb-0 text-uppercase extra-small tracking-wider">Expense Allocation</h6>
+            <button className="btn btn-light btn-sm rounded-pill"><i className="fas fa-cog extra-small"></i></button>
+          </div>
+          <div style={{ height: '280px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -62,24 +69,24 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ incomeData, expenseDa
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={85}
-                  paddingAngle={4}
-                  label={({ percent }) => percent > 0.1 ? `${(percent * 100).toFixed(0)}%` : ''}
+                  innerRadius={65}
+                  outerRadius={95}
+                  stroke="none"
+                  paddingAngle={5}
                 >
                   {expenseSummary.length > 0 ? (
                     expenseSummary.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={EXPENSE_COLORS[index % EXPENSE_COLORS.length]} stroke="#fff" strokeWidth={2} />
+                      <Cell key={`cell-${index}`} fill={EXPENSE_COLORS[index % EXPENSE_COLORS.length]} />
                     ))
                   ) : (
-                    <Cell fill="#f1f5f9" stroke="none" />
+                    <Cell fill="#f1f5f9" />
                   )}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  itemStyle={{ color: '#1e293b', fontSize: '12px', fontWeight: 'bold' }}
+                  contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                  itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                 />
-                <Legend iconType="circle" verticalAlign="bottom" layout="horizontal" wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', fontWeight: '600', color: '#64748b' }} verticalAlign="bottom" />
               </PieChart>
             </ResponsiveContainer>
           </div>

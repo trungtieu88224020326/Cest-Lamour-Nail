@@ -20,79 +20,67 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   const profitLoss = totalIncome - totalExpenses;
 
   return (
-    <div className="card h-100 border rounded-3 overflow-hidden shadow-sm bg-white">
-      <div className="card-body p-4 d-flex flex-column gap-4">
+    <div className="card h-100 overflow-hidden bg-white">
+      <div className="card-body p-4">
+        <h6 className="fw-bold text-muted mb-4 text-uppercase extra-small tracking-wider">Financial Snapshot</h6>
         
-        {/* Filter Section */}
-        <div className="row g-2">
+        {/* Date Selector */}
+        <div className="row g-2 mb-4">
           <div className="col-6">
-            <label className="form-label small fw-bold text-uppercase text-secondary mb-2 tracking-wide">Fiscal Year</label>
             <select 
-              className="form-select form-select-sm bg-light border-0 fw-semibold px-3 py-2" 
+              className="form-select border-0 bg-light fw-semibold small rounded-3" 
               value={year}
               onChange={(e) => onYearChange(Number(e.target.value))}
             >
-              {YEARS.map(y => <MenuItemWrapper key={y} value={y}>{y}</MenuItemWrapper>)}
+              {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
           <div className="col-6">
-            <label className="form-label small fw-bold text-uppercase text-secondary mb-2 tracking-wide">Month</label>
             <select 
-              className="form-select form-select-sm bg-light border-0 fw-semibold px-3 py-2" 
+              className="form-select border-0 bg-light fw-semibold small rounded-3" 
               value={month}
               onChange={(e) => onMonthChange(e.target.value)}
             >
-              {MONTHS.map(m => <MenuItemWrapper key={m} value={m}>{m}</MenuItemWrapper>)}
+              {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
             </select>
           </div>
         </div>
 
-        <hr className="my-0 opacity-10" />
-
-        {/* Financial Totals */}
-        <div className="d-flex flex-column gap-4">
-          <div>
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <span className="small fw-bold text-primary text-uppercase">Total Revenue</span>
-              <span className="h4 fw-black text-dark mb-0">$ {totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+        <div className="d-flex flex-column gap-3">
+          {/* Revenue Widget */}
+          <div className="p-3 bg-light rounded-4">
+            <div className="d-flex justify-content-between align-items-start mb-2">
+              <div className="text-muted small fw-medium">Total Revenue</div>
+              <div className="text-indigo-600 bg-indigo-50 px-2 py-1 rounded small extra-small fw-bold">+4.5%</div>
             </div>
-            <div className="row g-0 bg-light border rounded-3 overflow-hidden">
-              <div className="col-6 p-3">
-                <span className="d-block small text-secondary fw-semibold mb-1">Credit Cards</span>
-                <span className="h6 fw-bold text-primary mb-0">$ {totalCredit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-              </div>
-              <div className="col-auto py-3">
-                <div className="vr h-100 bg-secondary opacity-25"></div>
-              </div>
-              <div className="col p-3 text-end">
-                <span className="d-block small text-secondary fw-semibold mb-1">Cash / Other</span>
-                <span className="h6 fw-bold text-success mb-0">$ {totalCash.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-              </div>
+            <div className="h4 fw-bold mb-0">${totalIncome.toLocaleString()}</div>
+            <div className="mt-2 small text-muted">
+              <span className="fw-bold text-dark">${totalCredit.toLocaleString()}</span> via Cards
             </div>
           </div>
 
-          <div className="d-flex justify-content-between align-items-center">
-            <span className="small fw-bold text-danger text-uppercase">Total Expenses</span>
-            <span className="h5 fw-bold text-danger mb-0">$ {totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          {/* Expenses Widget */}
+          <div className="p-3 bg-light rounded-4">
+            <div className="text-muted small fw-medium mb-1">Estimated Expenses</div>
+            <div className="h5 fw-bold text-danger mb-0">${totalExpenses.toLocaleString()}</div>
+            <div className="progress mt-2" style={{ height: '4px' }}>
+              <div className="progress-bar bg-danger" style={{ width: '45%' }}></div>
+            </div>
           </div>
 
-          <div className={`p-4 rounded-3 border ${profitLoss >= 0 ? 'bg-success-subtle border-success' : 'bg-danger-subtle border-danger'}`}>
-            <span className={`d-block small fw-bold text-uppercase mb-1 ${profitLoss >= 0 ? 'text-success' : 'text-danger'}`}>
-              Net Monthly Performance
-            </span>
-            <span className={`h2 fw-black mb-0 ${profitLoss >= 0 ? 'text-success' : 'text-danger'}`}>
-              $ {profitLoss.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </span>
+          {/* Profit Section - Highlighted */}
+          <div className={`mt-2 p-4 rounded-4 text-white ${profitLoss >= 0 ? 'bg-indigo-600' : 'bg-danger shadow-danger'}`}>
+            <div className="opacity-75 small fw-bold text-uppercase mb-1 tracking-wider">Net Profit & Loss</div>
+            <div className="h2 fw-bold mb-0">${profitLoss.toLocaleString()}</div>
+            <div className="mt-2 d-flex align-items-center gap-2 extra-small fw-bold">
+              <i className={`fas ${profitLoss >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'}`}></i>
+              <span>Monthly Target Reached</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 };
-
-// Simple helper for native select options
-const MenuItemWrapper = ({ value, children }: { value: any, children: React.ReactNode }) => (
-  <option value={value}>{children}</option>
-);
 
 export default SummaryCard;
